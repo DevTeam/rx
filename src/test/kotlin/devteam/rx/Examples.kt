@@ -1,15 +1,8 @@
-# Reactive Extensions for Kotlin
+package devteam.rx
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [<img src="http://tcavs2015.cloudapp.net/app/rest/builds/buildType:(id:DevTeam_Rx_Build)/statusIcon"/>](http://tcavs2015.cloudapp.net/viewType.html?buildTypeId=DevTeam_Rx_Build&guest=1)
+import org.junit.Test
+import org.testng.Assert
 
-## Download
-
-  * [Stable version](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Rx_Build,pinned:true,status:SUCCESS,tags:release/artifacts/content/rx-1.0-SNAPSHOT.jar)
-  * [Nightly build](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Rx_Build,status:SUCCESS/artifacts/content/rx-1.0-SNAPSHOT.jar)
-  
-## Examples
-
-``` Koltin
 class Examples {
     @Test
     fun buildObservable() {
@@ -105,6 +98,3 @@ class Examples {
         }
     }
 }
-```
-
-
