@@ -14,7 +14,7 @@ class ObservablesTest {
         val source = buildObservable<Int> {
             onNext(1)
             onNext(2)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -28,7 +28,7 @@ class ObservablesTest {
 
         // When
         val source = buildObservable<Int> {
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -340,7 +340,7 @@ class ObservablesTest {
         // When
         val source = buildObservable<Int> {
             observers.add(this)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }.share()
 
@@ -361,7 +361,7 @@ class ObservablesTest {
 
         // When
         buildObservable<Int> {
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
                 .track({subscribes.add(it)}, {unsubscribes.add(it)})

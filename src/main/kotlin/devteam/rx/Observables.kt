@@ -17,7 +17,7 @@ fun <T> observableOf(vararg values: T): Observable<T> =
 
 fun <T> emptyObservable(): Observable<T> =
         buildObservable {
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -25,14 +25,14 @@ inline fun <T> Observable<T>.subscribe(crossinline onNext: (T) -> Unit): Disposa
         subscribe(object : Observer<T> {
             override fun onNext(value: T) = onNext(value)
             override fun onError(error: Exception) = Unit
-            override fun onComplete() = Unit
+            override fun onCompleted() = Unit
         })
 
-inline fun <T> Observable<T>.subscribe(crossinline onNext: (T) -> Unit, crossinline onError: (Exception) -> Unit, crossinline onComplete: () -> Unit): Disposable =
+inline fun <T> Observable<T>.subscribe(crossinline onNext: (T) -> Unit, crossinline onError: (Exception) -> Unit, crossinline onCompleted: () -> Unit): Disposable =
         subscribe(object : Observer<T> {
             override fun onNext(value: T) = onNext(value)
             override fun onError(error: Exception) = onError(error)
-            override fun onComplete() = onComplete()
+            override fun onCompleted() = onCompleted()
         })
 
 inline fun <T, R> Observable<T>.map(crossinline map: (T) -> R): Observable<R> =
@@ -40,7 +40,7 @@ inline fun <T, R> Observable<T>.map(crossinline map: (T) -> R): Observable<R> =
             subscribe(
                     { onNext(map(it)) },
                     { onError(it) },
-                    { onComplete() })
+                    { onCompleted() })
         }
 
 inline fun <T, R> Observable<T>.reduce(initialValue: R, crossinline operation: (acc: R, T) -> R): Observable<R> =
@@ -57,7 +57,7 @@ inline fun <T, R> Observable<T>.reduce(initialValue: R, crossinline operation: (
                             onNext(accumulator)
                         }
 
-                        onComplete()
+                        onCompleted()
                     })
         }
 
@@ -66,7 +66,7 @@ inline fun <T> Observable<T>.filter(crossinline filter: (T) -> Boolean): Observa
             subscribe(
                     { if (filter(it)) onNext(it) },
                     { onError(it) },
-                    { onComplete() })
+                    { onCompleted() })
         }
 
 inline fun <T> Observable<T>.until(crossinline completionCondition: (T) -> Boolean): Observable<T> =
@@ -77,12 +77,12 @@ inline fun <T> Observable<T>.until(crossinline completionCondition: (T) -> Boole
                         if (isCompleted.compareAndSet(false, completionCondition(it))) {
                             onNext(it)
                             if (isCompleted.get()) {
-                                onComplete()
+                                onCompleted()
                             }
                         }
                     },
                     { if(!isCompleted.get()) onError(it) },
-                    { if(!isCompleted.get()) onComplete() })
+                    { if(!isCompleted.get()) onCompleted() })
         }
 
 fun <T> Observable<T>.take(range: LongRange): Observable<T> =
@@ -109,7 +109,7 @@ fun <T> Observable<T>.last(): Observable<T> =
                     { onError(it) },
                     {
                         lastValue.get()?.let { onNext(it) }
-                        onComplete()
+                        onCompleted()
                     })
         }
 
@@ -119,7 +119,7 @@ fun <T> Observable<T>.count(): Observable<Long> =
 fun <T> Sequence<T>.toObservable(): Observable<T> =
         buildObservable {
             forEach { onNext(it) }
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -245,11 +245,11 @@ fun <T> Observable<T>.materialize(): Observable<Notification<T>> =
                     { onNext(NotificationNext(it)) },
                     {
                         onNext(NotificationError(it))
-                        onComplete()
+                        onCompleted()
                     },
                     {
                         onNext(NotificationCompleted.completed())
-                        onComplete()
+                        onCompleted()
                     })
         }
 
@@ -259,7 +259,7 @@ fun <T> Observable<Notification<T>>.dematerialize(): Observable<T> =
                 when (it) {
                     is NotificationNext<T> -> onNext(it.value )
                     is NotificationError -> onError(it.error)
-                    is NotificationCompleted -> onComplete()
+                    is NotificationCompleted -> onCompleted()
                 }
             }
         }

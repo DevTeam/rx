@@ -7,7 +7,7 @@ fun <T>subjectOf(): Subject<T> = object : Subject<T> {
     override fun subscribe(observer: Observer<T>): Disposable {
         synchronized(observers) {
             if (isCompleted) {
-                observer.onComplete()
+                observer.onCompleted()
                 return@synchronized
             }
 
@@ -37,10 +37,10 @@ fun <T>subjectOf(): Subject<T> = object : Subject<T> {
                 finish()
             }
 
-    override fun onComplete() =
+    override fun onCompleted() =
             synchronized(observers) {
                 for (observer in observers) {
-                    observer.onComplete()
+                    observer.onCompleted()
                 }
 
                 finish()

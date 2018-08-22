@@ -10,7 +10,7 @@ class Examples {
             onNext(1)
             onNext(2)
             onNext(3)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -93,7 +93,7 @@ class Examples {
             onNext(1)
             onNext(2)
             onNext(3)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
     }
