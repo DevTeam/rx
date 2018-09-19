@@ -17,7 +17,7 @@ class Examples {
             onNext(1)
             onNext(2)
             onNext(3)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
 
@@ -57,7 +57,7 @@ class Examples {
     fun until() {
         val actual = source.until { it != 2 }
 
-        assertEquals(actual, observableOf(1 ))
+        assertEquals(actual, observableOf(1))
     }
 
     @Test
@@ -100,7 +100,7 @@ class Examples {
             onNext(1)
             onNext(2)
             onNext(3)
-            onComplete()
+            onCompleted()
             emptyDisposable()
         }
     }
