@@ -1,13 +1,13 @@
 package devteam.rx
 
-fun <T>subjectOf(): Subject<T> = object : Subject<T> {
+fun <T> subjectOf(): Subject<T> = object : Subject<T> {
     private val observers: MutableList<Observer<T>> = mutableListOf()
     private var isCompleted: Boolean = false
 
     override fun subscribe(observer: Observer<T>): Disposable {
         synchronized(observers) {
             if (isCompleted) {
-                observer.onCompleted()
+                observer.onComplete()
                 return@synchronized
             }
 
@@ -37,10 +37,10 @@ fun <T>subjectOf(): Subject<T> = object : Subject<T> {
                 finish()
             }
 
-    override fun onCompleted() =
+    override fun onComplete() =
             synchronized(observers) {
                 for (observer in observers) {
-                    observer.onCompleted()
+                    observer.onComplete()
                 }
 
                 finish()
@@ -50,4 +50,11 @@ fun <T>subjectOf(): Subject<T> = object : Subject<T> {
         observers.clear()
         isCompleted = true
     }
+}
+
+fun <T> emptySubject(): Subject<T> = object : Subject<T> {
+    override fun subscribe(observer: Observer<T>): Disposable = emptyDisposable()
+    override fun onNext(value: T) = Unit
+    override fun onError(error: Exception) = Unit
+    override fun onComplete() = Unit
 }

@@ -1,3 +1,3 @@
 package devteam.rx
 
-interface Subject<T>: Observable<T>, Observer<T> { }
+interface Subject<T> : Observable<T>, Observer<T> {}

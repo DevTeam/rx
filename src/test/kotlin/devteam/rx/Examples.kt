@@ -5,12 +5,12 @@ import org.testng.Assert
 
 class Examples {
     @Test
-    fun buildObservable() {
-        val observable = buildObservable<Int> {
+    fun buildObservables() {
+        val observable = observable<Int> {
             onNext(1)
             onNext(2)
             onNext(3)
-            onCompleted()
+            onComplete()
             emptyDisposable()
         }
 
@@ -89,11 +89,11 @@ class Examples {
     }
 
     companion object {
-        private val source = buildObservable<Int> {
+        private val source = observable<Int> {
             onNext(1)
             onNext(2)
             onNext(3)
-            onCompleted()
+            onComplete()
             emptyDisposable()
         }
     }

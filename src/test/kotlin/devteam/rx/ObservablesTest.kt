@@ -1,3 +1,5 @@
+@file:Suppress("MoveLambdaOutsideParentheses")
+
 package devteam.rx
 
 import devteam.rx.NotificationCompleted.Companion.completed
@@ -11,10 +13,10 @@ class ObservablesTest {
         // Given
 
         // When
-        val source = buildObservable<Int> {
+        val source = observable<Int> {
             onNext(1)
             onNext(2)
-            onCompleted()
+            onComplete()
             emptyDisposable()
         }
 
@@ -27,8 +29,8 @@ class ObservablesTest {
         // Given
 
         // When
-        val source = buildObservable<Int> {
-            onCompleted()
+        val source = observable<Int> {
+            onComplete()
             emptyDisposable()
         }
 
@@ -41,7 +43,7 @@ class ObservablesTest {
         // Given
 
         // When
-        val source = buildObservable<Int> {
+        val source = observable<Int> {
             onNext(1)
             onNext(2)
             onError(error)
@@ -338,9 +340,9 @@ class ObservablesTest {
         val observers = mutableListOf<Observer<Int>>()
 
         // When
-        val source = buildObservable<Int> {
+        val source = observable<Int> {
             observers.add(this)
-            onCompleted()
+            onComplete()
             emptyDisposable()
         }.share()
 
@@ -360,8 +362,8 @@ class ObservablesTest {
         val unsubscribes = mutableListOf<Boolean>()
 
         // When
-        buildObservable<Int> {
-            onCompleted()
+        observable<Int> {
+            onComplete()
             emptyDisposable()
         }
                 .track({subscribes.add(it)}, {unsubscribes.add(it)})
@@ -371,6 +373,73 @@ class ObservablesTest {
         // Then
         Assert.assertEquals(subscribes, listOf(false, true))
         Assert.assertEquals(unsubscribes, listOf(false, true))
+    }
+
+    @DataProvider
+    fun testDistinct(): Array<Array<out Any?>> {
+        return arrayOf(
+                arrayOf(
+                        observableOf(NotificationNext(1), NotificationNext(1), NotificationNext(2), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(2), completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationNext(1), NotificationNext(2), NotificationNext(1), NotificationNext(1), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(2), completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationNext(1), NotificationNext(1), NotificationNext(2), NotificationNext(2), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(2), completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationNext(1), NotificationNext(1), NotificationNext(2), NotificationNext(2), NotificationNext(1), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(2), completed<Int>())),
+                arrayOf(
+                        observableOf(completed()),
+                        observableOf(completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationError(error)),
+                        observableOf(NotificationError<Int>(error))),
+                arrayOf(
+                        observableOf(NotificationNext(1), NotificationNext(2), NotificationNext(3), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(2), NotificationNext(3), completed<Int>())))
+    }
+
+    @Test(dataProvider = "testDistinct")
+    fun shouldDistinct(data: Observable<Notification<Int>>, expectedNotifications: Observable<Notification<Int>>) {
+        // Given
+        val source = data.dematerialize()
+
+        // When
+        val actual= source.distinct()
+
+        // Then
+        assertEquals(actual, expectedNotifications.dematerialize())
+    }
+
+    @DataProvider
+    fun testTypeOf(): Array<Array<out Any?>> {
+        return arrayOf(
+                arrayOf(
+                        observableOf(NotificationNext<Any>(1), NotificationNext<Any>("2"), NotificationNext<Any>(3), completed()),
+                        observableOf(NotificationNext(1), NotificationNext(3), completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationNext("1"), NotificationNext("2"), completed()),
+                        observableOf(completed<Int>())),
+                arrayOf(
+                        observableOf(completed()),
+                        observableOf(completed<Int>())),
+                arrayOf(
+                        observableOf(NotificationError(error)),
+                        observableOf(NotificationError<Int>(error))))
+    }
+
+    @Test(dataProvider = "testTypeOf")
+    fun shouldTypeOf(data: Observable<Notification<Any>>, expectedNotifications: Observable<Notification<Int>>) {
+        // Given
+        val source = data.dematerialize()
+
+        // When
+        val actual = source.ofType<Any, Int>()
+
+        // Then
+        assertEquals(actual, expectedNotifications.dematerialize())
     }
 
     companion object {

@@ -93,8 +93,8 @@ class DisposablesTest {
         // When
         try {
             disposable.use { throw Exception() }
+        } catch (ex: Exception) {
         }
-        catch (ex: Exception) { }
 
         // Then
         ctx.assertIsSatisfied()
