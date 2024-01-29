@@ -1,7 +1,7 @@
 package devteam.rx
 
-import org.junit.Test
 import org.testng.Assert
+import org.testng.annotations.Test
 
 class Examples {
     @Test
